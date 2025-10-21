@@ -93,20 +93,61 @@ static void fcfs(Process* input, int n){
 
 static void sjf(Process* input, int n){
 	Process* processes = malloc(sizeof(Process) * n);
-        if (!processes) {
-                perror("malloc");
-                exit(1);
-        }
+    if (!processes) {
+            perror("malloc");
+            exit(1);
+    }
 
-        for (int i = 0; i < n; i++){
-                processes[i] = input[i];
-        }
-        sort_by_burst(processes, n);
+    for (int i = 0; i < n; i++){
+            processes[i] = input[i];
+    }
+    sort_by_time(processes, n);
+	
+	int order = 0;
+	Process* right_order = malloc(sizeof(Process) * n);
 
-        int time = 0;
-        for(int i = 0; i < n; i++){
-		if(
+	int finishedCounter = 0;
+	int* finishedProc = calloc(n, sizeof(int));
+
+    int time = processes[0].arrival_time;
+    while(finishedCounter < n){
+		int id = -1;
+		for(int i = 0; i < n; i++){
+			if(finishedProc[i] == 1)
+				continue;
+			if(processes[i].arrival_time <= time) {
+				if(id == -1)
+					id = i;
+				else {
+					if (processes[i].burst_time < processes[id].burst_time || (processes[i].burst_time == processes[id].burst_time && processes[i].arrival_time < processes[id].arrival_time) || (processes[i].burst_time == processes[id].burst_time && processes[i].arrival_time == processes[id].arrival_time && processes[i].pid < processes[id].pid)) {
+                    id = i;
+					}
+				}
+			}
+		}
+
+		if (time < processes[id].arrival_time) 
+			time = processes[id].arrival_time; 
+		processes[id].start_time = time;
+		processes[id].finish_time = time + processes[id].burst_time;
+
+		processes[id].response_time   = processes[id].start_time  - processes[id].arrival_time;
+		processes[id].waiting_time    = processes[id].response_time;
+		processes[id].turnaround_time = processes[id].finish_time - processes[id].arrival_time;
+
+		right_order[order] = processes[id];
+		order++;
+
+		time = processes[id].finish_time;
+		finishedProc[id] = 1;
+		finishedCounter++;
 	}
+
+	printf("=== Shortest Job First (SJF) ===\n");
+	print_result(right_order, n);
+    	
+	free(processes);
+	free(right_order);
 }
 
 int main(void){
@@ -128,7 +169,7 @@ int main(void){
 	}
 
 	fcfs(arr, num);
-	sjf();	
+	sjf(arr, num);	
 
 	free(arr);
 	return 0;
