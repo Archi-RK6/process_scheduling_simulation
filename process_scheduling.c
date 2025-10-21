@@ -169,6 +169,7 @@ int main(void){
 	}
 
 	fcfs(arr, num);
+	printf("\n");
 	sjf(arr, num);	
 
 	free(arr);
