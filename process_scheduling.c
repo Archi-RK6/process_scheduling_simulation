@@ -89,6 +89,7 @@ static void fcfs(Process* input, int n){
 	print_result(processes, n);
     	
 	free(processes);
+	processes = NULL;
 }
 
 static void sjf(Process* input, int n){
@@ -147,7 +148,9 @@ static void sjf(Process* input, int n){
 	print_result(right_order, n);
     	
 	free(processes);
+	processes = NULL;
 	free(right_order);
+	right_order = NULL;
 }
 
 int main(void){
@@ -173,6 +176,7 @@ int main(void){
 	sjf(arr, num);	
 
 	free(arr);
+	arr = NULL;
 	return 0;
 }
 
